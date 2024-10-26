@@ -1,7 +1,8 @@
 # resources/user_resource.py
 from flask_restx import Resource, Namespace, fields
 from flask import request
-from facade import facade
+from app.services.facade import facade
+
 
 # Definir el namespace para usuarios
 api = Namespace('users', description="Operaciones relacionadas con usuarios")

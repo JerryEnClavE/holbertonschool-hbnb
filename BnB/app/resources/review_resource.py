@@ -1,7 +1,8 @@
 # resources/review_resource.py
 from flask_restx import Resource, Namespace, fields
 from flask import request
-from facade import facade
+from app.services.facade import Facade
+
 
 api = Namespace('reviews', description="Operaciones relacionadas con reseñas")
 
@@ -17,29 +18,29 @@ class ReviewListResource(Resource):
     @api.marshal_list_with(review_model)
     def get(self):
         """Obtener la lista de reseñas"""
-        return facade.get_all_reviews()
+        return Facade.get_all_reviews()
     
     @api.expect(review_model)
     @api.marshal_with(review_model, code=201)
     def post(self):
         """Crear una nueva reseña"""
         data = request.json
-        return facade.create_review(data), 201
+        return Facade.create_review(data), 201
 
 @api.route('/<string:review_id>')
 class ReviewResource(Resource):
     @api.marshal_with(review_model)
     def get(self, review_id):
         """Obtener una reseña por ID"""
-        return facade.get_review(review_id)
+        return Facade.get_review(review_id)
 
     @api.expect(review_model)
     @api.marshal_with(review_model)
     def put(self, review_id):
         """Actualizar una reseña por ID"""
         data = request.json
-        return facade.update_review(review_id, data)
+        return Facade.update_review(review_id, data)
 
     def delete(self, review_id):
         """Eliminar una reseña por ID"""
-        return facade.delete_review(review_id)
+        return Facade.delete_review(review_id)
