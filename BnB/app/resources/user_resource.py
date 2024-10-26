@@ -1,29 +1,42 @@
-# app/resources/user_resource.py
-from flask_restx import Resource, Namespace
-from app.models.user import User
+# resources/user_resource.py
+from flask_restx import Resource, Namespace, fields
+from flask import request
+from facade import facade
 
-api = Namespace('users', description='User operations')
+# Definir el namespace para usuarios
+api = Namespace('users', description="Operaciones relacionadas con usuarios")
+
+# Definir el modelo para validación de entrada/salida
+user_model = api.model('User', {
+    'username': fields.String(required=True, description="Nombre de usuario"),
+    'email': fields.String(required=True, description="Correo electrónico"),
+    # Añade otros campos necesarios para el usuario
+})
 
 @api.route('/')
-class UserList(Resource):
+class UserListResource(Resource):
+    @api.marshal_list_with(user_model)
     def get(self):
-        # Logic to retrieve all users
-        pass
-
+        """Obtener la lista de usuarios"""
+        return facade.get_all_users()
+    
+    @api.expect(user_model)
+    @api.marshal_with(user_model, code=201)
     def post(self):
-        # Logic to create a new user
-        pass
+        """Crear un nuevo usuario"""
+        data = request.json
+        return facade.create_user(data), 201
 
-@api.route('/<int:user_id>')
-class UserDetail(Resource):
+@api.route('/<string:user_id>')
+class UserResource(Resource):
+    @api.marshal_with(user_model)
     def get(self, user_id):
-        # Logic to retrieve a user by ID
-        pass
+        """Obtener un usuario por ID"""
+        return facade.get_user(user_id)
 
+    @api.expect(user_model)
+    @api.marshal_with(user_model)
     def put(self, user_id):
-        # Logic to update a user
-        pass
-
-    def delete(self, user_id):
-        # Logic to delete a user
-        pass
+        """Actualizar un usuario por ID"""
+        data = request.json
+        return facade.update_user(user_id, data)
