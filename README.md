@@ -1,1 +1,2 @@
-# holbertonschool-hbnb
+# HBnB Project
+This is the HBnB application.

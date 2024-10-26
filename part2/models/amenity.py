@@ -1,0 +1,2 @@
+# Amenity model
+
