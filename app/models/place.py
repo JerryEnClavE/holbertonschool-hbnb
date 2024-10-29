@@ -1,22 +1,20 @@
-# app/models/place.py
-from app.models.base import Base
-
-class Place(Base):
-    def __init__(self, name, description, location, user_id):
+from basemodel import BaseModel
+class Place(BaseModel):
+    def __init__(self, title, description, price, latitude, longitude, owner):
         super().__init__()
-        self.name = name
+        self.title = title
         self.description = description
-        self.location = location
-        self.user_id = user_id  # Link to the owner (User)
-        self.amenities = []  # List to hold related amenities
-        self.reviews = []  # List to hold related reviews
-
-    def add_amenity(self, amenity):
-        if amenity not in self.amenities:
-            self.amenities.append(amenity)
+        self.price = price
+        self.latitude = latitude
+        self.longitude = longitude
+        self.owner = owner
+        self.reviews = [] # List to store related reviews
+        self.amenities = [] # List to store related amenities
 
     def add_review(self, review):
+        """Add a review to the place."""
         self.reviews.append(review)
 
-    def __repr__(self):
-        return f"<Place {self.name} at {self.location}>"
+    def add_amenity(self, amenity):
+        """Add an amenity to the place."""
+        self.amenities.append(amenity)

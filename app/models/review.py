@@ -1,13 +1,9 @@
-# app/models/review.py
-from app.models.base import Base
+from basemodel import BaseModel
 
-class Review(Base):
-    def __init__(self, content, rating, user_id, place_id):
+class Review(BaseModel):
+    def __init__(self, text, rating, place, user):
         super().__init__()
-        self.content = content
+        self.text = text
         self.rating = rating
-        self.user_id = user_id  # User who wrote the review
-        self.place_id = place_id  # Place being reviewed
-
-    def __repr__(self):
-        return f"<Review by User {self.user_id} for Place {self.place_id}>"
+        self.place = place
+        self.user = user
