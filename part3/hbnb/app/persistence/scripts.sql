@@ -1,48 +1,61 @@
+-- Enable foreign key constraints
+PRAGMA foreign_keys = ON;
 
--- Crear la tabla User
+-- User Table
 CREATE TABLE IF NOT EXISTS User (
-    id BINARY(16) PRIMARY KEY,                     -- Utilizamos BINARY(16) para almacenar UUIDs de manera más eficiente
-    first_name VARCHAR(100) NOT NULL,              -- Ajustar el tamaño máximo según la necesidad
-    last_name VARCHAR(100) NOT NULL,
-    email VARCHAR(150) UNIQUE NOT NULL,            -- Ajustar el tamaño máximo según la necesidad
-    password VARCHAR(100) NOT NULL,                -- Asegúrate de que esté hasheada y ajusta el tamaño necesario
-    is_admin TINYINT(1) DEFAULT 0,                 -- Utilizando TINYINT(1) para compatibilidad más amplia
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Cambiamos a TIMESTAMP
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB;
+    id CHAR(36) PRIMARY KEY,
+    first_name VARCHAR(255) NOT NULL,
+    last_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    is_admin BOOLEAN DEFAULT FALSE,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
 
--- Crear la tabla Place
+-- Place Table
 CREATE TABLE IF NOT EXISTS Place (
-    id BINARY(16) PRIMARY KEY,
+    id CHAR(36) PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     description TEXT,
     price DECIMAL(10, 2) NOT NULL,
     latitude FLOAT NOT NULL,
     longitude FLOAT NOT NULL,
-    owner_id BINARY(16),
+    owner_id CHAR(36),
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (owner_id) REFERENCES User(id) ON DELETE CASCADE
-) ENGINE=InnoDB;
+);
 
--- Crear la tabla Review
+-- Review Table
 CREATE TABLE IF NOT EXISTS Review (
-    id BINARY(16) PRIMARY KEY,
+    id CHAR(36) PRIMARY KEY,
     text TEXT NOT NULL,
-    rating INT NOT NULL CHECK (rating BETWEEN 1 AND 5), -- Aseguramos que la calificación esté entre 1 y 5
-    user_id BINARY(16),
-    place_id BINARY(16),
+    rating INT NOT NULL CHECK (rating BETWEEN 1 AND 5),
+    user_id CHAR(36),
+    place_id CHAR(36),
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES User(id) ON DELETE CASCADE,
     FOREIGN KEY (place_id) REFERENCES Place(id) ON DELETE CASCADE,
-    UNIQUE (user_id, place_id) -- Asegura que un usuario no pueda dejar múltiples reseñas en el mismo lugar
-) ENGINE=InnoDB;
+    UNIQUE (user_id, place_id)
+);
 
--- Crear la tabla Amenity
+-- Amenity Table
 CREATE TABLE IF NOT EXISTS Amenity (
-    id BINARY(16) PRIMARY KEY,
+    id CHAR(36) PRIMARY KEY,
     name VARCHAR(255) UNIQUE NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB;
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Place_Amenity Table
+CREATE TABLE IF NOT EXISTS Place_Amenity (
+    place_id CHAR(36),
+    amenity_id CHAR(36),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (place_id, amenity_id),
+    FOREIGN KEY (place_id) REFERENCES Place(id) ON DELETE CASCADE,
+    FOREIGN KEY (amenity_id) REFERENCES Amenity(id) ON DELETE CASCADE
+);
